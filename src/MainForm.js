@@ -3,6 +3,7 @@ import React from 'react';
 import {Container, Form, Row, Col, Button} from "react-bootstrap";
 import dateFormat from "dateformat";
 import TextGradientComponent from "./TextGradientComponent";
+import {useNavigate} from "react-router-dom";
 
 
 function DateToInput({monthlyVersion, currentDate, fromDate, toDate, setToDate, toToday, setToToday}) {
@@ -76,38 +77,40 @@ function MainForm() {
         monthlyVersion, fromBeg, setFromBeg, toToday, setToToday, currentDate, fromDate, setFromDate, toDate, setToDate
     }
 
-    return (
-        <Container fluid={true} className='vh-100 d-flex align-items-center' style={{background: 'linear-gradient(140deg, rgba(246,161,146,1) 0%, rgba(246,217,146,1) 100%)'}}>
+    const navigate = useNavigate()
 
-            <Container className='ps-5 pe-5 pb-3 pt-3 rounded-4 border border-light' style={{backgroundColor: 'rgba(255,255,255,0.6)'}}>
-                <div onClick={() => setMonthlyVersion(!monthlyVersion)}>
-                    {TextGradientComponent(monthlyVersion ? 'monthly' : 'yearly')}
-                </div>
-                <p className='fs-1 fw-bold font-monospace'> tiny Last.fm analyzer</p>
-                    <Form>
-                        <Form.Group className='mb-3'>
-                            <Form.Label>Enter your last.fm username</Form.Label>
-                            <Form.Control value={username} onChange={event => setUsername(event.target.value)}/>
-                            <Form.Text className="text-muted">Make sure it's correct =D</Form.Text>
-                        </Form.Group>
-                        <Form.Group className='mb-4'>
-                            <Form.Label>Date ranges:</Form.Label>
-                            <Row className='justify-content-center'>
-                                {DateToInput(options)}
-                                {DateFromInput(options)}
-                            </Row>
-                        </Form.Group>
+    function onSubmit() {
+        navigate('/artist')
+    }
+
+    return (
+        <Container className='ps-5 pe-5 pb-3 pt-3 rounded-4 border border-light' style={{backgroundColor: 'rgba(255,255,255,0.6)'}}>
+            <div onClick={() => setMonthlyVersion(!monthlyVersion)}>
+                {TextGradientComponent(monthlyVersion ? 'monthly' : 'yearly')}
+            </div>
+            <p className='fs-1 fw-bold font-monospace'> tiny Last.fm analyzer</p>
+                <Form>
+                    <Form.Group className='mb-3'>
+                        <Form.Label>Enter your last.fm username</Form.Label>
+                        <Form.Control value={username} onChange={event => setUsername(event.target.value)}/>
+                        <Form.Text className="text-muted">Make sure it's correct =D</Form.Text>
+                    </Form.Group>
+                    <Form.Group className='mb-4'>
+                        <Form.Label>Date ranges:</Form.Label>
                         <Row className='justify-content-center'>
-                            <Col/>
-                            <Col className='d-grid'>
-                                <Button variant='outline-dark' className='mw-100' disabled={!Boolean(username)}> go! </Button>
-                            </Col>
-                            <Col/>
+                            {DateToInput(options)}
+                            {DateFromInput(options)}
                         </Row>
-                    </Form>
-                <Form.Text className='text-muted'>Tip: click the rainbow text to switch modes!</Form.Text>
-            </Container>
-            {/*</Row>*/}
+                    </Form.Group>
+                    <Row className='justify-content-center'>
+                        <Col/>
+                        <Col className='d-grid'>
+                            <Button variant='outline-dark' className='mw-100' disabled={!Boolean(username)} onClick={onSubmit}> go! </Button>
+                        </Col>
+                        <Col/>
+                    </Row>
+                </Form>
+            <Form.Text className='text-muted'>Tip: click the rainbow text to switch modes!</Form.Text>
         </Container>
     );
 }
