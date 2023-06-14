@@ -1,25 +1,17 @@
 import {Container, Row} from "react-bootstrap";
 import {motion} from "framer-motion";
 import MonthCard from "./MonthCard";
+import BigCard from "./BigCard";
 
-const yearsVariant = {
-    hidden: {opacity: 1},
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 9
-        }
-    }
-}
 
 const yearVariant = {
     hidden: {
         opacity: 0,
-        x: '-100%',
+        x: '-50%',
         scale: 0
     },
     visible: {
-        opacity: 1.5,
+        opacity: 1,
         x: 0,
         scale: 1,
         transition: {
@@ -31,14 +23,21 @@ const yearVariant = {
     }
 }
 
-function YearFrame({year}) {
+function YearFrame({year, monthlyVersion}) {
     return (
-        <motion.div variants={yearVariant}>
+        <motion.div   variants={yearVariant}
+                      initial='hidden'
+                      whileInView='visible'
+                      viewport={{ once: true, amount: 0.1 }}>
             <Container className='mt-5 p-3 rounded-4 border border-light' style={{backgroundColor: 'rgba(255,255,255,0.6)'}}>
-                {year.year}
+                <h1 style={{fontFamily: 'Monaco, Helvetica'}}>{year.year}</h1>
                 <Row>
                     {year.months.map(function(each){
-                        return <MonthCard month={each}/>})
+                        if (monthlyVersion)
+                            return <MonthCard month={each}/>
+                        else
+                            return <BigCard thingy={each}/>
+                    })
                     }
                 </Row>
             </Container>
@@ -46,18 +45,19 @@ function YearFrame({year}) {
     )
 }
 
-function YearsFrame({data}) {
+function YearsFrame({data, monthlyVersion}) {
     if (data.length > 0) {
         return (
-            <motion.div variants={yearsVariant} initial='hidden' animate='visible'>
+            <>
                 {data.map(function(each) {
                     return(
-                        <YearFrame year={each}/>
+                        <YearFrame year={each} monthlyVersion={monthlyVersion}/>
                     )
                 })}
-            </motion.div>
+            </>
         )
     }
+    return <>no years</>
 }
 
 export default YearsFrame;

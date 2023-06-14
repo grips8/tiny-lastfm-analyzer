@@ -4,6 +4,9 @@ import {Container, Form, Row, Col, Button} from "react-bootstrap";
 import dateFormat from "dateformat";
 import TextGradientComponent from "./TextGradientComponent";
 import {useNavigate} from "react-router-dom";
+import configData from "./config.json"
+import axios from "axios";
+import racc from "./raccLoading.gif";
 
 
 function DateToInput({monthlyVersion, currentDate, fromDate, toDate, setToDate, toToday, setToToday}) {
@@ -64,12 +67,14 @@ function MainForm() {
     const [fromBeg, setFromBeg] = React.useState(false);
     const [toToday, setToToday] = React.useState(false);
     const currentDate = new Date();
-    const [fromDate, setFromDate] = React.useState(monthlyVersion ? '2002-03' : '2002');
+    const [fromDate, setFromDate] = React.useState(dateFormat(currentDate, monthlyVersion ? 'yyyy-mm' : 'yyyy'));
     const [toDate, setToDate] = React.useState(dateFormat(currentDate, monthlyVersion ? 'yyyy-mm' : 'yyyy'));
+    const [isDataLoading, setIsDataLoading] = React.useState(false)
+    let resultData = null;
 
     const setMonthlyVersion = (bool) => {
         _setMonthlyVersion(bool);
-        setFromDate(bool ? '2002-03' : '2002');
+        setFromDate(dateFormat(currentDate, bool ? 'yyyy-mm' : 'yyyy'));
         setToDate(dateFormat(currentDate, bool ? 'yyyy-mm' : 'yyyy'));
     }   // reevaluate other states on change
 
@@ -79,16 +84,60 @@ function MainForm() {
 
     const navigate = useNavigate()
 
-    function onSubmit() {
-        navigate('/artist')
+    function handleRequest() {
+        axios.interceptors.request.use(config => {
+            setIsDataLoading(true);
+            resultData = null;
+            return config;
+        }, error => {
+            setIsDataLoading(false);
+            return Promise.reject(error);
+        });
+
+        axios({
+            method: "GET",
+            url: configData.SERVER_URL,
+            responseType: 'json',
+            params: {
+                username: username,
+                fromDate: fromDate,
+                toDate: toDate,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                isMonthlyVersion: monthlyVersion
+            }
+
+        })
+            .then(response => {
+                setIsDataLoading(false);
+                resultData = response.data;
+                console.log(fromDate)
+                console.log(toDate)
+                const timezoneOffset = (new Date()).getTimezoneOffset();
+                console.log(timezoneOffset);
+                navigate('/artist', {state: {data: resultData, monthlyVersion: monthlyVersion}});
+            }, error => {
+                setIsDataLoading(false);
+                console.log(error);
+            })
     }
 
-    return (
-        <Container className='ps-5 pe-5 pb-3 pt-3 rounded-4 border border-light' style={{backgroundColor: 'rgba(255,255,255,0.6)'}}>
-            <div onClick={() => setMonthlyVersion(!monthlyVersion)}>
-                {TextGradientComponent(monthlyVersion ? 'monthly' : 'yearly')}
-            </div>
-            <p className='fs-1 fw-bold font-monospace'> tiny Last.fm analyzer</p>
+
+    if (isDataLoading) {
+        return (
+            <Container fluid className='d-flex flex-column vh-100 justify-content-center align-items-center'>
+                <img src={racc} alt='loading...'/><br/>
+                Loading...
+                <p className='text-muted'>be prepared for long loading time!</p>
+            </Container>
+            );
+    }
+    else {
+        return (
+            <Container className='ps-5 pe-5 pb-3 pt-3 rounded-4 border border-light' style={{backgroundColor: 'rgba(255,255,255,0.6)'}}>
+                <div onClick={() => setMonthlyVersion(!monthlyVersion)}>
+                    {TextGradientComponent(monthlyVersion ? 'monthly' : 'yearly')}
+                </div>
+                <p className='fs-1 fw-bold font-monospace'> tiny Last.fm analyzer</p>
                 <Form>
                     <Form.Group className='mb-3'>
                         <Form.Label>Enter your last.fm username</Form.Label>
@@ -105,14 +154,15 @@ function MainForm() {
                     <Row className='justify-content-center'>
                         <Col/>
                         <Col className='d-grid'>
-                            <Button variant='outline-dark' className='mw-100' disabled={!Boolean(username)} onClick={onSubmit}> go! </Button>
+                            <Button variant='outline-dark' className='mw-100' disabled={!Boolean(username)} onClick={() => handleRequest()}> go! </Button>
                         </Col>
                         <Col/>
                     </Row>
                 </Form>
-            <Form.Text className='text-muted'>Tip: click the rainbow text to switch modes!</Form.Text>
-        </Container>
-    );
+                <Form.Text className='text-muted'>Tip: click the rainbow text to switch modes!</Form.Text>
+            </Container>
+        );
+    }
 }
 
 export default MainForm;
