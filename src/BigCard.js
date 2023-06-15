@@ -97,15 +97,15 @@ function BigCard({thingy}) {
                                 }}
                             >
                                 <Card.Title>name:</Card.Title>
-                                <Card.Title className='fw-bold'>{thingy.name}</Card.Title>
+                                <Card.Title className='fw-bold text-center'>{thingy.name}</Card.Title>
                                 <Card.Subtitle>scrobbles: {thingy.scrobbles}</Card.Subtitle>
                                 <hr/>
                                 <Card.Title>{thingy.secondLabel}</Card.Title>
-                                <Card.Title className='fw-bold'>{thingy.second}</Card.Title>
+                                <Card.Title className='fw-bold text-center'>{thingy.second}</Card.Title>
                                 <Card.Subtitle>{scrLabel} {thingy.secondScrobbles}</Card.Subtitle>
                                 <hr/>
                                 <Card.Title>{thingy.thirdLabel}</Card.Title>
-                                <Card.Title className='fw-bold'>{thingy.third}</Card.Title>
+                                <Card.Title className='fw-bold text-center'>{thingy.third}</Card.Title>
                                 <Card.Subtitle>{scrLabel} {thingy.thirdScrobbles}</Card.Subtitle>
                             </Card>
                         </motion.div>

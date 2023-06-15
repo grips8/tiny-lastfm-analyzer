@@ -1,3 +1,4 @@
 {
-  "SERVER_URL": "tiny-lastfm-analyzer.up.railway.app/api"
+  "SERVER_URL": "https://tiny-lastfm-analyzer.up.railway.app/api",
+  "SERVER_URL_TEST": "http://0.0.0.0:5000/api"
 }

@@ -118,6 +118,7 @@ function MainForm() {
             }, error => {
                 setIsDataLoading(false);
                 console.log(error);
+                alert(error);
             })
     }
 
@@ -147,8 +148,8 @@ function MainForm() {
                     <Form.Group className='mb-4'>
                         <Form.Label>Date ranges:</Form.Label>
                         <Row className='justify-content-center'>
-                            {DateToInput(options)}
                             {DateFromInput(options)}
+                            {DateToInput(options)}
                         </Row>
                     </Form.Group>
                     <Row className='justify-content-center'>
